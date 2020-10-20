@@ -3,20 +3,6 @@
 # This playbook will prompt for VM name, number of disks and size of disk
   hosts: Lab-NIM-26
 
-  vars_prompt:
-    - name: "Number_of_disks"
-      prompt: "Number of new disks to create and attach:"
-      private: no
-    - name: "Size_of_disks"
-      prompt: "Size of new disks (GB)"
-      private: no
-    - name: "Storage_Template"
-      prompt: "Enter name of storage template to use:"
-      private: no
-    - name: "VM_Name"
-      prompt: "Enter name of VM to attach the disks to:"
-      private: no
-
   tasks:
   - name: Show VM name
     debug:
