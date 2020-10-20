@@ -1,0 +1,60 @@
+---
+# tasks file for VM_flavor_list
+
+- name: Retrieve list of all public flavors
+  os_flavor_info:
+  register: result
+
+- name: Filter flavor list
+  set_fact:
+    flavors: "{{ result | json_query('openstack_flavors[?is_public==`true`].
+              {name: name, id: id, ram: ram, vcpus: vcpus}') }}"
+
+- name: Debug - Output Flavors
+  debug:
+    var: flavors
+    verbosity: 1
+
+- name: Output List
+  set_fact:
+    flavor_list: "{{ item.name }} [ vCPUs: {{ item.vcpus }} , Mem: {{ item.ram }} , id: {{ item.id }} ]"
+  with_items: "{{ flavors }}"
+  loop_control:
+    label: "  Flavor = {{ item.name }}  [ vCPUs: {{ item.vcpus }} | Mem: {{ item.ram }} | id: {{ item.id }} ]  "
+
+- name: Request Flavor
+  pause:
+    prompt: "Enter name of flavor to use "
+  register: VM_Flavor_Input
+  when:  VM_Flavor_Name is undefined
+
+- name: Set Flavor name
+  set_fact:
+    VM_Flavor_Name: "{{ VM_Flavor_Input.user_input }}"
+  when:  VM_Flavor_Name is undefined
+
+- name: Output Flavor List
+  debug:
+    var: VM_Flavor_Name
+
+- name: Get data for selected flavor
+  set_fact:
+    VM_Flavor_array:  "{{ result | json_query(query) | list }}"
+  vars:
+    query: "openstack_flavors[?name=='{{ VM_Flavor_Name }}' ]"
+
+- name: Debug - Output Flavor Array
+  debug:
+    var: VM_Flavor_array.0
+    verbosity: 1
+
+- name: Set Values for selected flavor
+  set_fact:
+    VM_Flavor_ID:   "{{ VM_Flavor_array.0['id'] }}"
+    VM_Flavor_Mem:  "{{ VM_Flavor_array.0['ram'] }}"
+    VM_Flavor_CPU:  "{{ VM_Flavor_array.0['vcpus'] }}"
+
+- name: Output ID for selected flavor
+  debug: 
+    msg: "{{ VM_Flavor_Name }} - vCPUs='{{ VM_Flavor_CPU }}', Mem='{{ VM_Flavor_Mem }}', ID='{{ VM_Flavor_ID }}'"
+

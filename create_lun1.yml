@@ -1,0 +1,12 @@
+---
+- name: Create a LUN via PowerVC 
+  hosts: localhost
+  tasks:
+    - name: Create a new LUN 
+      os_volume:
+        state: present
+        display_name: my-new-lun
+        size: 13
+        volume_type: "V7K1_RackH base template"
+        scheduler_hints:
+          same_host: 16a79b9e-d5b0-46d7-9c30-f359041375b8

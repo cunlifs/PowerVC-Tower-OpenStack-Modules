@@ -1,0 +1,10 @@
+---
+# vars file for roles/resolv_conf
+
+ansible_python_interpreter: auto_silent
+Source_Dir:        "files"
+Target_Dir:        "~richj/target"
+DNS_Conf:          "resolv.conf"
+DNS_File:          "/etc/{{ DNS_Conf }}"
+DNS_Copy:          "{{ Source_Dir }}/{{ DNS_Conf }}"
+

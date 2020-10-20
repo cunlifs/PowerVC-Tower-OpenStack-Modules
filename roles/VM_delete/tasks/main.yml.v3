@@ -1,0 +1,30 @@
+---
+# tasks file for VM_delete
+# Remove a VM with VM_Name parameter
+- name: Print VM disk info
+  set_fact:
+    Disk_List: "{{ vm_info.ansible_facts | json_query(query) }}"
+  vars:
+    query: 'openstack_servers[0].volumes[*].
+           {id: id, delete: delete_on_termination}'
+
+- name: Disks set to 'false' will remain after VM "{{ VM_Name }}" is deleted  # Loop through the 'disk heading' and 'disk list'
+  set_fact:
+    Disk_Debug: "{{ Disk_Seq }} {{ item.id }} {{ item.delete }} )"
+  with_items: "{{ Disk_Heading }},{{ Disk_List }}"
+  loop_control:
+    index_var: Disk_Seq
+    label: "{{ item.id|center(width=50) }} | {{ item.delete|center(width=20) }}" 
+  register: Disk_Array
+
+#- name: Remove a VM instance
+#  os_server:
+#    state: absent
+#    name: "{{ VM_Name }}"
+#  register: vm_delete
+#  ignore_errors: yes
+
+#- name: Debug - Display results of VM removal
+#  debug:
+#    var: vm_delete
+#  ignore_errors: yes

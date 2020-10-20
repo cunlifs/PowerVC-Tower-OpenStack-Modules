@@ -1,0 +1,53 @@
+---
+# tasks file for VM_name_list
+# Uses os_server_facts not os_server_info
+
+  - name: Retrieve list of all VMs 
+    os_server_facts:
+    register: result
+    when: VM_Name is undefined
+
+  - name: Retrieve VM list
+    os_server_facts:
+      filters:
+        name: "{{ VM_Name }}"
+    register: VM_Name_result
+    when: VM_Name is defined
+
+  - name: Set VM list
+    set_fact:
+      result: "{{ VM_Name_result }}"
+    when: VM_Name is defined
+
+  - name: Debug - Output os_server_info results
+    debug:
+      var: result
+      verbosity: 3
+
+  - name: Build VM list
+    set_fact:
+      VM_List: "{{ result.ansible_facts | json_query(query) }}"
+    vars:
+      query: 'openstack_servers[*].
+            {name: name, IP: public_v4, State: "OS-EXT-STS:vm_state", Host: "OS-EXT-SRV-ATTR:hypervisor_hostname"}'
+
+  - name: Debug - Output VM List
+    debug:
+      var: VM_List
+      verbosity: 1
+
+  - name: Output List
+    set_fact:
+      VM_debug: "Seq: {{ VM_Seq }}, Name: {{ item.name }}, IP: {{ item.IP }}, Host: {{ item.Host }}, State: {{ item.State }}"
+    with_items: "{{VM_Heading}},{{ VM_List }}"
+    loop_control:
+      index_var: VM_Seq
+      label: "{% if VM_Seq == 0 %}Seq{% else %}{{ VM_Seq|center(width=3) }}{% endif %} | {{ item.name|center(width=35) }}|{{ item.IP|center(width=15) }} | {{ item.Host|center(width=16) }} | {{ item.State }} "
+    register: VM_Array
+
+
+  - name: Debug - Output VM List
+    debug:
+      var: VM_Array.results
+      verbosity: 1
+

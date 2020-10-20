@@ -1,0 +1,27 @@
+---
+# tasks file for VM_network_list
+
+- name: Retrieve list of all networks
+  os_networks_info:
+  register: result
+
+- name: Generate Network list
+  set_fact:
+    Net_List: "{{ result | json_query(query) }}"
+  vars:
+    query: 'openstack_networks[*].
+          {name: name, segment: "provider:segmentation_id", type: "provider:network_type", status: status}'
+
+- name: Debug - Output Network list
+  debug:
+    var: Net_List
+    verbosity: 1
+
+- name: Display Network list  # Loop through the 'net heading' and 'net list'
+  set_fact:
+    Net_Debug: "{{ Network_Seq }} {{ item.name }} {{ item.segment }} {{ item.type }} {{ item.status }} )"
+  with_items: "{{ Net_Heading }},{{ Net_List }}"
+  loop_control:
+    index_var: Network_Seq
+    label: "{{ item.name|center(width=50) }} | {{ item.segment|center(width=11) }} | {{ item.type|center(width=8) }} | {{ item.status|center(width=10) }} "
+  register: Net_Array

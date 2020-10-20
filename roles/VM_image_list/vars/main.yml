@@ -1,0 +1,11 @@
+---
+# vars file for VM_image_list
+OS_Heading:
+  os_distro: "- OS -"
+
+VM_Heading:
+  name: "- Image Name -"
+  os_distro: "- OS -"
+  status: "- State -"
+  project: "- Project -"
+  id: "- Image ID -"

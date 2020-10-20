@@ -1,0 +1,11 @@
+---
+# vars file for ntp_conf
+
+ansible_python_interpreter: auto_silent
+Ansible_Source_Dir:  "files"
+Ansible_Target_Dir:  "~richj/target"
+NTP_Conf:            "ntp.conf"
+NTP_Original_File:   "/etc/{{ NTP_Conf }}"
+NTP_Source_File:     "{{ Ansible_Source_Dir }}/{{ NTP_Conf }}"
+
+

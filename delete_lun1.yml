@@ -1,0 +1,9 @@
+---
+- name: Delete a LUN via PowerVC 
+  hosts: localhost
+  tasks:
+    - name: Delete a new LUN 
+      os_volume:
+        state: absent
+        display_name: my-new-lun
+        size: 13

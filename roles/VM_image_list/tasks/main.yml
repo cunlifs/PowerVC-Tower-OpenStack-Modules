@@ -1,0 +1,36 @@
+---
+# tasks file for VM_image_list
+# This playbook uses os_image_facts not the later os_image_info - please change for new Ansible envs
+# Also removed the OS distro in this copy 
+
+- name: Retrieve list of all OS Distributions
+  os_image_facts:
+  register: result
+
+- name: show images
+  debug:
+    var: result
+    verbosity: 1
+
+- name: Set OS Distro search for ALL parameters
+  set_fact:
+    ImageQuery: "openstack_image[*].{name: name, id: id, os_distro: os_distro, status: status, project: location.project.name}"
+
+## List Images 
+- name: Filter image list
+  set_fact:
+    VM_Images: "{{ result.ansible_facts | json_query(ImageQuery) }}"
+
+- name: Debug - Output Image list
+  debug:
+    var: VM_Images
+    verbosity: 1
+
+- name: Display list of images
+  set_fact:
+    image_list: "{{ VM_Image_Seq }} {{ item.name }} | os_distro: {{ item.os_distro }} | Status: {{ item.status }} | Project: {{ item.project }}  ( {{ item.id }} )"
+  with_items: "{{ VM_Heading }},{{ VM_Images }}"
+  loop_control:
+    index_var: VM_Image_Seq
+    label: "{{ item.name|center(width=45) }}|{{ item.os_distro|center(width=8) }} | {{ item.id|center(width=30) }} "
+  register: VM_Array

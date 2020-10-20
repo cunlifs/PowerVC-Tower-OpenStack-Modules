@@ -1,0 +1,14 @@
+---
+# tasks file for VM_show_vm_details
+# Role to show VM name, IP, state and hypervisor from vm_info (using ansible facts at present)
+- name: Display all VM info if run in debug mode
+  debug:
+    var: vm_info.ansible_facts
+    verbosity: 1
+
+- name: Print VM info
+  debug:
+    msg: "{{ vm_info.ansible_facts | json_query(query) }}"
+  vars:
+    query: 'openstack_servers[*].
+           {name: name, IP: public_v4, State: "OS-EXT-STS:vm_state", Host: "OS-EXT-SRV-ATTR:hypervisor_hostname"}'

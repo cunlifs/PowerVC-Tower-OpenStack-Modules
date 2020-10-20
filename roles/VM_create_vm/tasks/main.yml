@@ -1,0 +1,58 @@
+---
+# tasks file for VM_create
+# This playbooks creates the VM, using 2 NICs and also creating the key pair
+
+- name: Create an SSH Key Pair
+  os_keypair:
+    state: present
+    name: ansible-ssh-key
+    public_key_file: "{{ ansible_env.HOME }}/.ssh/id_rsa.pub"
+
+- name: Create a new VM instance
+  os_server:
+    state:    present
+    name:     "{{ VM_Name }}"
+    image:    "{{ VM_Image_ID }}"
+    flavor:   "{{ VM_Flavor_ID }}"
+    timeout:  240
+    key_name: ansible-ssh-key
+    nics:
+      - port-name: "{{ VM_Net_Port_1 }}"
+      - port-name: "{{ VM_Net_Port_2 }}"
+    meta:
+      hostname: "{{ VM_Name }}"
+  register: vm
+
+- name: Print VM name and server
+  debug:
+    msg: "{{ vm | json_query(query) }}"
+  vars:
+    query: 'openstack.
+          {hostname: hostname, hypervisor: "OS-EXT-SRV-ATTR:hypervisor_hostname"}'
+
+- name: Print VM's Network 1 IP addresses
+  debug:
+    msg:
+      - "Network name: {{ VM_Net_Name_1 }}"
+      - "{{ vm | json_query(query) }}"
+  vars:
+    query: 'openstack.addresses."{{ VM_Net_Name_1 }}"[*].
+          {IP: addr}'
+
+- name: Print VM's Network 2 IP addresses
+  debug:
+    msg: 
+      - "Network name: {{ VM_Net_Name_2 }}"
+      - "{{ vm | json_query(query) }}"
+  vars:
+    query: 'openstack.addresses."{{ VM_Net_Name_2 }}"[*].
+          {IP: addr}'
+
+- name: Waits for SSH port 22 to open
+  wait_for:
+    host: "{{ vm.openstack.public_v4 }}"
+    port: 22
+
+- name: Add VM host key to known hosts
+  shell: "ssh-keyscan -H {{ vm.openstack.public_v4 }} >> ~/.ssh/known_hosts"
+

@@ -1,0 +1,48 @@
+---
+# tasks file for VM_network_pick
+
+- name: Request Network
+  pause:
+    prompt: "Enter name of network to use ( leave blank for default [{{ VM_Net_Default }}] ) "
+  register: VM_Network_Input
+  when:  VM_Net_Name is undefined
+
+- name: Set Network name to Default
+  set_fact:
+    VM_Net_Name: "{{ VM_Net_Default }}"
+  when:
+    -  VM_Net_Name is undefined
+    -  VM_Network_Input.user_input == ""
+
+- name: Set Network name to input value
+  set_fact:
+    VM_Net_Name: "{{ VM_Network_Input.user_input }}"
+  when:  VM_Net_Name is undefined
+
+- name: Output Network List
+  debug:
+    var: VM_Net_Name
+
+- name: Get data for selected network
+  set_fact:
+    VM_Network_array:  "{{ result | json_query(query) | list }}"
+  vars:
+    query: "openstack_networks[?name=='{{ VM_Net_Name }}' ]"
+
+- name: Debug - Output Network Array
+  debug:
+    var: VM_Network_array.0
+    verbosity: 1
+
+- name: Set Values for selected network
+  set_fact:
+    VM_Network_Seg:  "{{ VM_Network_array.0['provider:segmentation_id'] }}"
+    VM_Network_Type:   "{{ VM_Network_array.0['provider:network_type'] }}"
+    VM_Network_Status:  "{{ VM_Network_array.0['status'] }}"
+  when: VM_Network_array.0 is defined
+
+- name: Output ID for selected network
+  debug: 
+    msg: "{{ VM_Net_Name }} - Segment='{{ VM_Network_Seg }}', Type='{{ VM_Network_Type }}', Status='{{ VM_Network_Status }}'"
+  when: VM_Network_array.0 is defined
+

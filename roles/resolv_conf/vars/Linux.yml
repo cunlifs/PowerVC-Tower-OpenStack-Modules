@@ -1,0 +1,6 @@
+---
+# vars file for Linux gosts
+
+# Group name for copied file
+DNS_Group_Name:    "root"
+

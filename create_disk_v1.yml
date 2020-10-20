@@ -1,0 +1,10 @@
+---
+- name: Create a SAN Disk via PowerVC 
+  hosts: localhost
+  tasks:
+    - name: Create a new Disk 
+      os_volume:
+        state: present
+        display_name: "{{ Disk_Name }}"
+        size: "{{ Disk_Size }}"
+        volume_type: "{{ Storage_Template }}"

@@ -1,0 +1,11 @@
+---
+# vars file for Linux gosts
+
+# Group name for copied file
+NTP_Group_Name:    "root"
+
+# Attributes for NTP daemon 
+NTP_Daemon_Name:   "ntpd"
+NTP_Service_State: "restarted"
+
+

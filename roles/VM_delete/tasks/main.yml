@@ -1,0 +1,121 @@
+---
+# tasks file for VM_delete
+# Remove a VM with VM_Name parameter
+- name: SHow VM info
+  debug:
+    var: vm_info.ansible_facts.openstack_servers[0]
+    verbosity: 1
+
+- name: Obtain the device ID for VM "{{ VM_Name }}"  # Cannot use filters if Ansible is 2.7
+  set_fact:
+    VM_ID: "{{ vm_info.ansible_facts.openstack_servers[0].id }}"
+
+- name: Obtain port info for VM "{{ VM_Name }}"
+  os_port_info:
+    filters:
+      device_id: "{{ VM_ID }}"
+  register: port_info
+
+- name: Print port info
+  set_fact:
+    Port_List: "{{ port_info | json_query(query) }}"
+  vars:
+    query: 'openstack_ports[*].
+           {id: id, name: name, MAC: mac_address}'
+
+- name: These ports will remain after VM "{{ VM_Name }}" is deleted, unless you select to delete them
+  set_fact:
+    Port_Debug: "{{ Port_Seq }} {{ item.id }} {{ item.name }} {{ item.MAC}} )"
+  with_items: "{{ Port_Heading }},{{ Port_List }}"
+  loop_control:
+    index_var: Port_Seq
+    label: "{{ item.id|center(width=40) }} | {{ item.name|center(width=25) }} | {{ item.MAC|center(width=17) }}" 
+  register: Port_Array
+
+- name: Delete associated ports
+  pause:
+    prompt: "\nDo you want to delete these ports after the VM is removed? ( Y/N ) "
+  register: delete_ports_prompt
+
+- name: Set the ID of the Ports to delete, after VM removal
+  set_fact:
+    Ports_to_delete: "{{ port_info | json_query('openstack_ports[*].id') }}"
+  when:
+    - delete_ports_prompt.user_input == "Y" or delete_ports_prompt.user_input == "y"
+   
+- name: Print VM disk info
+  set_fact:
+    Disk_List: "{{ vm_info.ansible_facts | json_query(query) }}"
+  vars:
+    query: "openstack_servers[0].volumes[*].
+           {id: id, delete: delete_on_termination}"
+
+- name: Disks set to 'false' will remain after VM "{{ VM_Name }}" is deleted, unless you select to delete them
+  set_fact:
+    Disk_Debug: "{{ Disk_Seq }} {{ item.id }} {{ item.delete }} )"
+  with_items: "{{ Disk_Heading }},{{ Disk_List }}"
+  loop_control:
+    index_var: Disk_Seq
+    label: "{{ item.id|center(width=40) }} | {{ item.delete|center(width=20) }}" 
+  register: Disk_Array
+
+- name: Delete associated disks
+  pause:
+    prompt: "\nDo you want to delete all disks after the VM is removed? ( Y/N ) "
+  register: delete_disks_prompt
+
+- name: Set the ID of the disks to delete, after VM removal (where delete_on_termination is False)
+  set_fact:
+    Disks_to_delete: "{{ vm_info.ansible_facts.openstack_servers[0] | json_query('volumes[*].id') }}"
+  when:
+    - delete_disks_prompt.user_input == "Y" or delete_disks_prompt.user_input == "y"
+
+- name: Show disk to delete
+  debug:
+    var: Disks_to_delete
+  when:
+    - delete_disks_prompt.user_input == "Y" or delete_disks_prompt.user_input == "y"
+
+#- name: Removing VM "{{ VM_Name }}"
+#  os_server:
+#    state: absent
+#    name: "{{ VM_Name }}"
+#  register: vm_delete
+#  ignore_errors: yes
+
+#- name: Debug - Display results of VM removal
+#  debug:
+#    var: vm_delete
+#    verbosity: 1
+#  ignore_errors: yes
+
+#- name: Removing ports "{{ Ports_to_delete }}"
+#  os_port:
+#    state: absent
+#    name: "{{ item }}"
+#  with_items: "{{ Ports_to_delete }}"
+#  register: ports
+#  when:
+#    - delete_ports_prompt.user_input == "Y" or delete_ports_prompt.user_input == "y"
+
+#- name: show ports
+#  debug:
+#    var: ports 
+#    verbosity: 1
+#  when:
+#    - delete_ports_prompt.user_input == "Y" or delete_ports_prompt.user_input == "y"
+#
+#- name: Remove disks associated with VM "{{ VM_Name }}"
+#  os_volume:
+#    state: absent
+#    volume: "{{ item }}"
+#  with_items: "{{ Disks_to_delete }}"
+#  register: disk_delete
+#  when:
+#    - delete_disks_prompt.user_input == "Y" or delete_disks_prompt.user_input == "y"
+
+#- name: Show disk deletion
+#  debug:
+#    var: disk_delete
+#  when:
+#    - delete_disks_prompt.user_input == "Y" or delete_disks_prompt.user_input == "y"

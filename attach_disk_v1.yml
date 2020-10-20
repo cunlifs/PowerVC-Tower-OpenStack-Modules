@@ -1,0 +1,9 @@
+---
+- name: Attach a SAN Disk via PowerVC 
+  hosts: localhost
+  tasks:
+    - name: Attach existing Disk 
+      os_server_volume:
+        state: present
+        server: "{{ VM_Name }}"
+        volume: "{{ Disk_Name }}"

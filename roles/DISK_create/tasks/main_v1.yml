@@ -1,0 +1,23 @@
+---
+# tasks file for DISK_create
+- name: Prompt for new Disk size
+  pause: 
+    prompt: "Enter Size for new disk"
+  register: DISK_Size_Entry
+  when: DISK_Size is undefined
+
+- name: Set Disk Size Variables
+  set_fact:
+    DISK_Size: "{{ DISK_Size_Entry.user_input }}"
+  when: DISK_Size is undefined
+
+- name: Set Disk Name
+  set_fact:
+    DISK_Name: "{{ VM_Name }}-disk-1"
+
+- name: Create a new disk 
+  os_volume:
+    state: present
+    display_name: "{{ DISK_Name }}"
+    size: "{{ DISK_Size }}"
+    volume_type: "{{ Storage_Template }}"

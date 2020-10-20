@@ -1,0 +1,8 @@
+---
+# vars file for VM_flavor_list
+VM_Heading:
+  name: "- Flavour -"
+  vcpus: "- vCPUs -"
+  ram: "- Mem -"
+  id: "- ID -"
+

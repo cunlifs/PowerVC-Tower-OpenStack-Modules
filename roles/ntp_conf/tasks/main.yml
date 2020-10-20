@@ -1,0 +1,31 @@
+---
+# tasks file for ntp_conf
+- name: Load OS specific variables
+  include_vars: "{{ ansible_system }}.yml"
+#  when: ansible_system == "AIX"
+  tags: ntp
+
+#- name: Load Linux specific variables
+#  include_vars: Linux.yml
+#  when: ansible_system == "Linux"
+#  tags: ntp
+
+- name: Save existing ntp.conf file localy
+  fetch:
+    src:  "{{ NTP_Original_File }}"
+    dest: "{{ Ansible_Target_Dir }}"
+  tags: ntp
+
+- name: Copy New ntp.conf file onto target
+  copy:
+    #src:  "{{ role_path }}/{{ NTP_Source_File }}"
+    src:  "{{ NTP_Source_File }}"
+    dest: "{{ NTP_Original_File }}"
+    owner: root
+    group: "{{ NTP_Group_Name }}"
+    mode: '0644'
+    backup: yes
+  register: ntp_result
+  notify: Start/Refresh NTPd on targets
+  tags: ntp
+

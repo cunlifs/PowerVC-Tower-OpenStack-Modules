@@ -1,0 +1,8 @@
+---
+# vars file for DISK_create
+Storage_Template: "V7K1_RackH base template"
+disk:
+  - name: Disk1
+    size: 12
+  - name: Disk2
+    size: 13

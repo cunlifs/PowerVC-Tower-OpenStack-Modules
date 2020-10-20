@@ -1,0 +1,32 @@
+---
+# tasks file for VM_flavor_list
+# Uses os_flavor_facts
+
+- name: Retrieve list of all public flavors
+  os_flavor_facts:
+  register: result
+
+- name: show flavors
+  debug:
+    var: result
+    verbosity: 1
+
+- name: Filter flavor list
+  set_fact:
+    VM_Flavors: "{{ result.ansible_facts | json_query('openstack_flavors[?is_public==`true`].
+              {name: name, id: id, ram: ram, vcpus: vcpus}') }}"
+
+- name: Debug - Output Flavors
+  debug:
+    var: VM_Flavors
+    verbosity: 1
+
+- name: Output List
+  set_fact:
+    flavor_list: "{{ item.name }} [ vCPUs: {{ item.vcpus }} , Mem: {{ item.ram }} , id: {{ item.id }} ]"
+  with_items: "{{VM_Heading}},{{ VM_Flavors }}"
+  loop_control:
+    index_var: VM_Seq
+    label: "{{ item.name|center(width=28) }}|{{ item.vcpus|center(width=9) }} | {{ item.ram|center(width=7) }} | {{ item.id }} "
+  register: VM_Array
+

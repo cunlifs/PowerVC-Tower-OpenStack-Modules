@@ -1,0 +1,13 @@
+---
+- name: Delete a PowerVC Virtual Machine
+  hosts: localhost
+  tasks:
+    - name: Remove a new VM instance
+      os_server:
+        state: absent
+        name: my-new-vm
+      register: vm
+
+    - name: Print VM's public IP address
+      debug:
+        var: vm

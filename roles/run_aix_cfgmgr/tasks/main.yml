@@ -1,0 +1,10 @@
+---
+# tasks file for run_aix_cfgmgr
+- name: Run cfgmgr
+  command: cfgmgr
+  register: cfgmgr_output
+
+- name: Display cfgmgr output if required
+  debug:
+    var: cfgmgr_output
+    verbosity: 1

@@ -1,0 +1,31 @@
+---
+- name: Create a small AIX 7.2 Virtual Machine via PowerVC
+  hosts: localhost
+  tasks:
+    - name: Create a new VM instance
+      os_server:
+        state: present
+        name: "{{ New_VM_Name }}"
+        image: ede0295c-f1b1-4f7c-9b5e-49be20657c49 
+        flavor: ca56c117-c43d-43c6-adc3-f7eab4b93c2e 
+        key_name: "sc-tower-2"
+        nics:
+          - net-name: "VLAN_156"
+        meta:
+          hostname: "{{ New_VM_Name }}"
+          group: ansible-vms
+      register: vm
+
+    - name: Print VM's public IP address
+      debug:
+        var: vm.openstack.public_v4
+
+    - name: Waits for SSH port 22 to open
+      wait_for:
+        host: "{{ vm.openstack.public_v4 }}"
+        port: 22
+
+#    - name: Add VM host key to known hosts
+#      shell: "ssh-keyscan -H {{ vm.openstack.public_v4 }} >> /root/.ssh/known_hosts"
+#      become: true
+#      become_user: root

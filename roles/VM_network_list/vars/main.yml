@@ -1,0 +1,8 @@
+---
+# vars file for VM_network_list
+
+Net_Heading:
+  name: "- Net Name -"
+  segment: "- Segment -"
+  type: "- Type -"
+  status: "- Status -"

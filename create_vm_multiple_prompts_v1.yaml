@@ -1,0 +1,31 @@
+---
+- name: Create a Virtual Machine via PowerVC
+  hosts: localhost
+  tasks:
+    - name: Create a new VM instance
+      os_server:
+        state: present
+        name: "{{ New_VM_Name }}"
+        image: "{{ Image_Name }}"
+        flavor: "{{ Flavor_Name }}"
+        key_name: "sc-tower-2"
+        nics:
+          - net-name: "{{ Network_Name }}"
+        meta:
+          hostname: "{{ New_VM_Name }}"
+          group: ansible-vms
+      register: vm
+
+    - name: New VM's IP address
+      debug:
+        var: vm.openstack.public_v4
+
+    - name: Waits for SSH port 22 to open
+      wait_for:
+        host: "{{ vm.openstack.public_v4 }}"
+        port: 22
+
+#    - name: Add VM host key to known hosts
+#      shell: "ssh-keyscan -H {{ vm.openstack.public_v4 }} >> /root/.ssh/known_hosts"
+#      become: true
+#      become_user: root

@@ -1,0 +1,6 @@
+---
+# vars file for AIX hosts
+
+# Group name for copied file
+DNS_Group_Name:     "system"
+

@@ -1,0 +1,28 @@
+---
+# tasks file for VM_image_list
+
+- name: Retrieve list of all AIX images
+  os_image_info:
+    properties:
+      os_distro: aix  # remove this line to list all images
+  register: result
+
+- name: Filter image list
+  set_fact:
+    images: "{{ result | json_query('openstack_image[*].
+          {name: name, id: id, os_distro: os_distro, status: status,
+          project: location.project.name}') }}"
+
+- name: Debug - Output Image list
+  debug:
+    var: images
+    verbosity: 1
+
+- name: Display list of images
+  set_fact:
+    image_list: "{{ VM_Image_Seq }} {{ item.name }} | os_distro: {{ item.os_distro }} | Status: {{ item.status }} | Project: {{ item.project }}  ( {{ item.id }} )"
+  with_items: "{{ images }}"
+  loop_control:
+    index_var: VM_Image_Seq
+    label: "{{ VM_Image_Seq }}  AIX Image = '{{ item.name }}'  [ {{ item.id }} ]  "
+

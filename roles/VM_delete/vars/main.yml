@@ -1,0 +1,10 @@
+---
+# vars file for VM_delete
+Port_Heading:
+  id: "- Port ID -"
+  name: "- Port Name -"
+  MAC: "- Port MAC -"
+
+Disk_Heading:
+  id: "- Disk ID -"
+  delete: "- Delete with VM -"

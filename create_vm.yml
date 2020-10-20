@@ -1,0 +1,36 @@
+---
+- name: Create a PowerVC Virtual Machine
+  hosts: localhost
+  tasks:
+    - name: Create an SSH Key Pair
+      os_keypair:
+        state: present
+        name: ansible-ssh-key
+        public_key_file: "{{ ansible_env.HOME }}/.ssh/id_rsa.pub"
+
+    - name: Create a new VM instance
+      os_server:
+        state: present
+        name: my-new-vm
+        image: f9cf6949-56f0-4214-97a6-a21aa7284615 
+        flavor: b326ac19-ef37-487f-8ed3-8f24b3015900
+        key_name: ansible-ssh-key
+        nics:
+          - net-name: "VLAN 156"
+        meta:
+          hostname: my-new-vm
+          group: ansible-vms
+      register: vm
+
+    - name: Print VM's public IP address
+      debug:
+        var: vm.openstack.public_v4
+
+    - name: Waits for SSH port 22 to open
+      wait_for:
+        host: "{{ vm.openstack.public_v4 }}"
+        port: 22
+
+    - name: Add VM host key to known hosts
+      shell: "ssh-keyscan -H {{ vm.openstack.public_v4 }} >> ~/.ssh/known_hosts"
+

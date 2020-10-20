@@ -1,0 +1,19 @@
+---
+# tasks file for VM_suspend
+# Input VM_Name
+- name: Update information for VM to show suspended prior to deletion
+  os_server_metadata:
+    server: "{{ VM_Name }}"
+    meta:
+      Description: "Suspended prior to deletion"
+  register: meta_data
+
+- name: Show meta
+  debug:
+    var: meta_data
+
+- name: Stop VM instance "{{ VM_Name }}"
+  os_server_action:
+    server: "{{ VM_Name }}"
+    action: stop
+  register: vm_suspend

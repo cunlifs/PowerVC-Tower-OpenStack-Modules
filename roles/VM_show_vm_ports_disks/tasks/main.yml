@@ -1,0 +1,9 @@
+---
+# tasks file for VM_show_vm_ports_disks
+# Role to show VM name, IP, state and hypervisor from vm_info (using ansible facts at present)
+- name: Print VM info
+  debug:
+    msg: "{{ vm_info.ansible_facts | json_query(query) }}"
+  vars:
+    query: 'openstack_servers[*].volumes[*]
+           {id: id, delete: delete_on_termination"}'

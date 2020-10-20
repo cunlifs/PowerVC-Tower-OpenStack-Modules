@@ -1,0 +1,10 @@
+---
+# vars file for VM_name_list
+
+VM_Array: []
+VM_Heading:
+  name: "- VM_Name -"
+  IP: "- IP_Address -"
+  State: "- State -"
+  Host: "- Host -"
+

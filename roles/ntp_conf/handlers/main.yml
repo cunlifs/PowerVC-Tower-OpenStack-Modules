@@ -1,0 +1,10 @@
+---
+# handlers file for ntp_conf
+
+- name: Start/Refresh NTPd on targets
+  service:
+    name:  "{{ NTP_Daemon_Name }}"
+    state: "{{ NTP_Service_State }}"
+  tags: ntp
+
+

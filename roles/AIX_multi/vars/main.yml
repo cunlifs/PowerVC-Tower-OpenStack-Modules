@@ -1,0 +1,9 @@
+---
+# vars file for AIX_multi
+install_dir_name:   /installp
+install_lpp_name:   expect.man.en_US
+filesystem_vg_name: rootvg
+filesystem_lv_name: mksysblv
+filesystem_lv_size: 5G
+filesystem_fs_name: /mksysb/images
+mksysb_image_name:  mksysb_1

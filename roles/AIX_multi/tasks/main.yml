@@ -1,0 +1,84 @@
+---
+# tasks file for AIX_multi
+- name: Check if installp directory exists
+  stat:
+    path: "{{ install_dir_name }}"
+  register: file_details
+  when:
+    - ansible_system == "AIX"
+  tags: install
+
+- name: Make /installp directory if missing
+  # command: mkdir {{ install_dir_name }}
+  file:
+    state: directory
+    path: "{{ install_dir_name }}"
+  when:
+    - ansible_system == "AIX"
+    - file_details.stat.exists == False
+  tags: install
+
+- name: Copy installp files into /installp
+  copy:
+    src:    '{{ install_lpp_name }}'
+    dest:   '{{ install_dir_name }}/{{ install_lpp_name }}'
+  when:
+    - ansible_system == "AIX"
+  tags: install, copy
+
+- name: Create mksysb LV (mksysblv) with 5GB
+  aix_lvol:
+    vg:   "{{ filesystem_vg_name }}"
+    lv:   "{{ filesystem_lv_name }}"
+    size: "{{ filesystem_lv_size }}"
+    state: present
+  register: lv_result
+  when:
+    - ansible_system == "AIX"
+  tags: filesystem, backup
+
+- name: Create mksysb filesystem using mksysblv
+  aix_filesystem:
+    device:     "{{ filesystem_lv_name }}"
+    filesystem: "{{ filesystem_fs_name }}"
+    state: present
+  register: fs_result
+  when:
+    - ansible_system == "AIX"
+    - lv_result.changed
+  tags: filesystem, backup
+
+- name: Mount mksysb filesystem /mksysb/images
+  aix_filesystem:
+    filesystem: "{{ filesystem_fs_name }}"
+    state:      mounted
+  register: mount_result
+  when:
+    - ansible_system == "AIX"
+    - fs_result.changed
+  tags: filesystem, backup
+
+- name: Install expect.man client from file
+  installp:
+    repository_path: "{{ install_dir_name }}"
+    name: all
+    state: present
+  register: install_result
+  when:
+    - ansible_system == "AIX"
+  tags: install
+- name: Display expect.man LPP install result
+  debug:
+    var: install_result
+  tags: install
+
+- name: Generate a mksysb on /mksysb/images
+  mksysb:
+    name:          "{{ mksysb_image_name }}"
+    storage_path:  "{{ filesystem_fs_name }}"
+    exclude_files: yes
+    exclude_wpar_files: yes
+  when:
+    - ansible_system == "AIX"
+  tags: backup, mksysb
+

@@ -1,0 +1,11 @@
+---
+# vars file for AIX hosts
+
+# Group name for copied file
+NTP_Group_Name:     "system"
+
+# Attributes for NTP daemon
+NTP_Daemon_Name:    "xntpd"
+NTP_Service_State:  "reloaded"
+
+

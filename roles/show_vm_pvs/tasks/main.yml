@@ -1,0 +1,11 @@
+---
+# tasks file for show_vm_pvs
+- name: Show PVs on VM
+  command: lspv
+  register: lspv_output
+
+- name: Display PVs
+  debug:
+    msg:
+     - "Physical Volumes:"
+     - "{{ lspv_output.stdout }}"
