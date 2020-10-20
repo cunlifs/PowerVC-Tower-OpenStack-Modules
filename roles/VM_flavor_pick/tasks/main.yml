@@ -3,11 +3,11 @@
 # This version assumes old Ansible so ansible_facts added below
 - name: Retrieve list of all public flavors
   os_flavor_facts:
-  register: flavor.result
+  register: flavors
 
 - name: Get data for selected flavor
   set_fact:
-    VM_Flavor_array:  "{{ flavor.result.ansible_facts | json_query(query) | list }}"
+    VM_Flavor_array:  "{{ flavors.ansible_facts | json_query(query) | list }}"
   vars:
     query: "openstack_flavors[?name=='{{ VM_Flavor_Name }}' ]"
 

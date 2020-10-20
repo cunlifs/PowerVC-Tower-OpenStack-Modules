@@ -3,11 +3,11 @@
 # As this is for an older version of Ansible, we refer to ansible_facts below. Remove for newer versions.
 - name: Retrieve list of all OS images
   os_image_facts:
-  register: image.result
+  register: images
 
 - name: Get data for selected image
   set_fact:
-    VM_Image_Array:  "{{ image.result.ansible_facts | json_query(query) }}"
+    VM_Image_Array:  "{{ images.ansible_facts | json_query(query) }}"
   vars:
     query: "openstack_image[?name=='{{ VM_Image_Name }}' ]"
 
