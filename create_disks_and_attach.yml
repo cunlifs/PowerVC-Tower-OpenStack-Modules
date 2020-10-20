@@ -31,14 +31,13 @@
     vars:
       disk_number: "{{ count }}"
 
-#  - name: Reset count variable
-#    set_fact: count=1
+# Reset count variable to start the attach process
+  - name: Reset count variable
+    set_fact: count=1
 
-#  - name: Attach new disks
-#    include_role:
-#      name: DISK_attach
-#    with_sequence: count="{{ Number_of_disks }}"
-#    vars:
-#      disk_number: "{{ count }}"
-#    when:
-#      - VM_Name_OK.user_input == "y" or VM_Name_OK.user_input == "Y"
+  - name: Attach new disks
+    include_role:
+      name: DISK_attach
+    with_sequence: count="{{ Number_of_disks }}"
+    vars:
+      disk_number: "{{ count }}"
