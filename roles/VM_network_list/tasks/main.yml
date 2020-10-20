@@ -5,6 +5,11 @@
   os_networks_info:
   register: result
 
+- name: show networks
+  debug:
+    var: result
+    verbosity: 1
+
 - name: Generate Network list
   set_fact:
     Net_List: "{{ result | json_query(query) }}"
