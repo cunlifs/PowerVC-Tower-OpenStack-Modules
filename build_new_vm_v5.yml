@@ -43,6 +43,10 @@
     debug:
       msg: "Creating VM {{ VM_Name }}"
 
+  - name: List Available Networks
+    import_role:
+      name: VM_network_list
+
   - name: Create network interfaces for VM
     import_role:
       name: VM_network_create
