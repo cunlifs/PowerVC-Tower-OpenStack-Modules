@@ -1,7 +1,7 @@
 ---
 - name: Run AIX configuration manager
 # This playbook will prompt for VM name, number of disks and size of disk
-  hosts: "{{ VM_Name }}"
+  hosts: Lab-NIM-26
 
   vars_prompt:
     - name: "Number_of_disks"
