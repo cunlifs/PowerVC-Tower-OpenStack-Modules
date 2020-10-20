@@ -1,0 +1,79 @@
+---
+- name: Build a new VM via PowerVC/OpenStack
+# This playbook will prompt for VM name, image,flavor
+# Version 2 - prompt for IP addresses
+# Version 3 - syntax
+# Version 4 - quit playbooks if hostname is incorrect
+  hosts: localhost
+  vars:
+    cloud: powervc
+
+  vars_prompt:
+    - name: "VM_Name"
+      prompt: "Enter name of new VM to create"
+      private: no
+      confirm: yes
+
+  tasks:
+  - name: Display VM Name and confirm
+    pause:
+      prompt: "Creating VM {{ VM_Name }}, continue? (Y/N)"
+    register: VM_Name_OK
+    tags: VM_Create
+ 
+  - name: Quit if name is incorrect
+    meta: end_play
+    when:
+     - VM_Name_OK.user_input != "y" and VM_Name_OK.user_input != "Y"
+
+  - name: List Available Networks
+    import_role:
+      name: VM_network_list
+    tags: VM_Create, VM_Network
+
+  - name: Pick Network for VM
+    import_role:
+      name: VM_network_pick
+    tags: VM_Create
+
+  - name: List VM images
+    import_role:
+      name: VM_image_list
+    tags: VM_Create, VM_Images
+
+  - name: Pick VM images
+    import_role:
+      name: VM_image_pick
+    tags: VM_Create 
+
+  - name: Display Flavors for selection
+    import_role:
+      name: VM_flavor_list
+    when: VM_Image_ID is defined
+    tags: VM_Create 
+
+  - name: Pick VM flavors
+    import_role:
+      name: VM_flavor_pick
+    when: VM_Image_ID is defined
+    tags: VM_Create 
+
+  - name: List existing VMs
+    import_role:
+      name: VM_name_list
+    tags: VM_List, VM_Create
+
+  - name: Show details before creating VM
+    pause:
+      prompt: "\nCreate New VM  : '{{ VM_Name }}' \n       Networks : '{{VM_Net_Name_1 }}' & '{{VM_Net_Name_2}}'\n       Image   : {{ VM_Image_Name }} '{{ VM_Image_ID }}'\n       Flavour : {{ VM_Flavor_Name }} - vCPUs:{{ VM_Flavor_CPU }} Mem:{{ VM_Flavor_Mem }} '{{ VM_Flavor_ID }}'\n\nCreate VM with above details ? ( Y/N ) "
+    register: VM_Create_prompt
+    when: VM_Flavor_ID is defined
+    tags: VM_Create 
+
+  - name: Create new VM
+    import_role:
+      name: VM_create_vm
+    when: 
+      - VM_Flavor_ID is defined
+      - VM_Create_prompt.user_input == "y" or VM_Create_prompt.user_input == "Y"
+    tags: VM_Create 
