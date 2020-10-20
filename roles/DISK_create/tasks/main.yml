@@ -6,7 +6,7 @@
 
 - name: Set Disk Name
   set_fact:
-    DISK_Name: "{{ VM_Name }}-disk-{{ disk_number }}"
+    DISK_Name: "{{ VM_Name }}-disk-{{ UID }}-{{ disk_number }}"
 
 - name: Create a new disk
   os_volume:

@@ -20,6 +20,11 @@
       private: no
 
   tasks:
+  - name: Set random Number
+      set_fact:
+        UID: "{{ 100 | random }}"
+      run_once: yes
+
   - name: Display number of disks, size and name of VM Name
     debug:
       msg: "Creating {{ Number_of_disks }} disk(s) of size {{ Size_of_disks }}GB, and attaching to VM {{ VM_Name}}"

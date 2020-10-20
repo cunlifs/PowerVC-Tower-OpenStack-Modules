@@ -2,9 +2,9 @@
 # tasks file for DISK_attach
 - name: Set Disk Name
   set_fact:
-    DISK_Name: "{{ VM_Name }}-disk-{{ disk_number }}"
+    DISK_Name: "{{ VM_Name }}-disk-{{ UID }}-{{ disk_number }}"
 
-- name: Attach New Disk 
+- name: Attach New Disk
   os_server_volume:
     state: present
     server: "{{ VM_Name }}"
