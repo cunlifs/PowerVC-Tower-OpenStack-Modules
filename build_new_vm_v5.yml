@@ -10,8 +10,6 @@
   vars_prompt:
     - name: "VM_Name"
       prompt: "Enter name of new VM to create"
-      private: no
-      confirm: no
       name: "VM_Net_Name_1"
       prompt: "Enter name of primary network"
       private: no
@@ -60,11 +58,12 @@
       name: VM_name_list
 
   - name: Show details before creating VM
-    pause:
-      prompt: "\nCreate New VM  : '{{ VM_Name }}' \n       Networks : '{{VM_Net_Name_1 }}' & '{{VM_Net_Name_2}}'\n       Image   : {{ VM_Image_Name }} '{{ VM_Image_ID }}'\n       Flavour : {{ VM_Flavor_Name }} - vCPUs:{{ VM_Flavor_CPU }} Mem:{{ VM_Flavor_Mem }} '{{ VM_Flavor_ID }}'\n\nCreate VM with above details ? ( Y/N ) "
-    register: VM_Create_prompt
-    when: VM_Flavor_ID is defined
-    tags: VM_Create
+    debug:
+      msg: "\nCreating New VM: '{{ VM_Name }}' \n
+      Primary Network: '{{VM_Net_Name_1 }}' with IP '{{VM_Net_IP_1}}'\n
+      Secondary Network: '{{VM_Net_Name_2 }}' with IP '{{VM_Net_IP_2}}'\n
+      Using Image: {{ VM_Image_Name }} '{{ VM_Image_ID }}'\n
+      Using Compute Template : {{ VM_Flavor_Name }} - vCPUs:{{ VM_Flavor_CPU }} Mem:{{ VM_Flavor_Mem }}"
 
 #  - name: Create new VM
 #    import_role:
