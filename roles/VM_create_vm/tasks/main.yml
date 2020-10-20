@@ -41,7 +41,7 @@
 
 - name: Print VM's Network 2 IP addresses
   debug:
-    msg: 
+    msg:
       - "Network name: {{ VM_Net_Name_2 }}"
       - "{{ vm | json_query(query) }}"
   vars:
@@ -55,4 +55,3 @@
 
 - name: Add VM host key to known hosts
   shell: "ssh-keyscan -H {{ vm.openstack.public_v4 }} >> ~/.ssh/known_hosts"
-
