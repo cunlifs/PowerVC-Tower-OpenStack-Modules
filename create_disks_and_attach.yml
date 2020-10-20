@@ -1,0 +1,44 @@
+---
+- name: Create a new LUNs (all the same size) and attach to VM via PowerVC/OpenStack
+# This playbook will prompt for VM name, number of disks and size of disk
+  hosts: localhost
+  vars:
+    count: 1
+
+  vars_prompt:
+    - name: "Number_of_disks"
+      prompt: "Number of new disks to create and attach:"
+      private: no
+    - name: "Size_of_disks"
+      prompt: "Size of new disks (GB)"
+      private: no
+    - name: "Storage_Template"
+      prompt: "Enter name of storage template to use:"
+      private: no
+    - name: "VM_Name"
+      prompt: "Enter name of VM to attach the disks to:"
+      private: no
+
+  tasks:
+  - name: Display number of disks, size and name of VM Name
+    debug:
+      msg: "Creating {{ Number_of_disks }} disk(s) of size {{ Size_of_disks }}GB, and attaching to VM {{ VM_Name}}"
+
+  - name: Create new Disks
+    include_role:
+      name: DISK_create
+    with_sequence: count="{{ Number_of_disks }}"
+    vars:
+      disk_number: "{{ count }}"
+
+#  - name: Reset count variable
+#    set_fact: count=1
+
+#  - name: Attach new disks
+#    include_role:
+#      name: DISK_attach
+#    with_sequence: count="{{ Number_of_disks }}"
+#    vars:
+#      disk_number: "{{ count }}"
+#    when:
+#      - VM_Name_OK.user_input == "y" or VM_Name_OK.user_input == "Y"
