@@ -2,6 +2,10 @@
 # tasks file for VM_network_pick
 # This version will ask for 2 network interfaces to be selected, no default VLAN
 # Version 2 prompts for IP addresses
+- name: Retrieve list of all networks
+  os_networks_info:
+  register: network.result
+
 - name: Set Network 1 Port Name
   set_fact:
     VM_Net_Port_1: "{{ VM_Name }}-{{ VM_Net_Name_1 }}-port"
@@ -34,7 +38,7 @@
 
 - name: Get data for selected network 1
   set_fact:
-    VM_Network_array_1:  "{{ result | json_query(query) | list }}"
+    VM_Network_array_1:  "{{ network.result | json_query(query) | list }}"
   vars:
     query: "openstack_networks[?name=='{{ VM_Net_Name_1 }}' ]"
 
@@ -45,7 +49,7 @@
 
 - name: Get data for selected network 2
   set_fact:
-    VM_Network_array_2:  "{{ result | json_query(query) | list }}"
+    VM_Network_array_2:  "{{ network.result | json_query(query) | list }}"
   vars:
     query: "openstack_networks[?name=='{{ VM_Net_Name_2 }}' ]"
 
