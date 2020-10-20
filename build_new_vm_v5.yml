@@ -41,7 +41,7 @@
   tasks:
   - name: Display VM Name
     debug:
-      msg: "Creating VM {{ VM_Name }}"ß
+      msg: "Creating VM {{ VM_Name }}"
 
   - name: Create network interfaces for VM
     import_role:
