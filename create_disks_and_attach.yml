@@ -1,5 +1,5 @@
 ---
-- name: Create a new LUNs (all the same size) and attach to VM via PowerVC/OpenStack
+- name: Create new LUNs (all the same size) and attach to VM via PowerVC/OpenStack
 # This playbook will prompt for VM name, number of disks and size of disk
   hosts: localhost
   vars:
