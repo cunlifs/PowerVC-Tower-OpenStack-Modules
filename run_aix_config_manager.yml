@@ -1,13 +1,13 @@
 ---
 - name: Run AIX configuration manager
 # This playbook will prompt for VM name, number of disks and size of disk
-  hosts: Lab-NIM-26
+  hosts: all
 
   tasks:
   - name: Show VM name
     debug:
       msg: "Running configuration manager on VM {{ VM_Name}}"
-
-  - name: Run configuration manager
-    include_role:
-      name: run_aix_cfgmgr
+#
+#  - name: Run configuration manager
+#    include_role:
+#      name: run_aix_cfgmgr
