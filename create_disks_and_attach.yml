@@ -22,7 +22,7 @@
   tasks:
   - name: Set random Number
     set_fact:
-      UID: "{{ 100 | random }}"
+      UID: "{{ 9999 | random }}"
     run_once: yes
 
   - name: Display number of disks, size and name of VM Name
