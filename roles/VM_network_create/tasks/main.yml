@@ -1,6 +1,7 @@
 ---
-# tasks file for VM_network_create
-# This role will create 2 network ports
+# tasks file for VM_network_pick
+# This version will ask for 2 network interfaces to be selected, no default VLAN
+# Version 2 prompts for IP addresses
 - name: Set Network 1 Port Name
   set_fact:
     VM_Net_Port_1: "{{ VM_Name }}-{{ VM_Net_Name_1 }}-port"

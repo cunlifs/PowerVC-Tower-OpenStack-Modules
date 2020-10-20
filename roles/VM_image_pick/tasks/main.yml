@@ -1,22 +1,6 @@
 ---
 # tasks file for VM_image_pick
 # As this is for an older version of Ansible, we refer to ansible_facts below. Remove for newer versions.
-
-- name: Request Image
-  pause:
-    prompt: "Enter name of image to use "
-  register: VM_Image_Input
-  when:  VM_Image_Name is undefined
-
-- name: Set Image name
-  set_fact:
-    VM_Image_Name: "{{ VM_Image_Input.user_input }}"
-  when:  VM_Image_Name is undefined
-
-- name: Output Image List
-  debug:
-    var: VM_Image_Name
-
 - name: Get data for selected image
   set_fact:
     VM_Image_Array:  "{{ result.ansible_facts | json_query(query) }}"

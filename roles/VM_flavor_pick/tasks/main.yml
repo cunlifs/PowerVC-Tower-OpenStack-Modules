@@ -1,22 +1,6 @@
 ---
 # tasks file for VM_flavor_pick
 # This version assumes old Ansible so ansible_facts added below
-
-- name: Request Flavor
-  pause:
-    prompt: "Enter name of flavor to use "
-  register: VM_Flavor_Input
-  when:  VM_Flavor_Name is undefined
-
-- name: Set Flavor name
-  set_fact:
-    VM_Flavor_Name: "{{ VM_Flavor_Input.user_input }}"
-  when:  VM_Flavor_Name is undefined
-
-- name: Output Flavor List
-  debug:
-    var: VM_Flavor_Name
-
 - name: Get data for selected flavor
   set_fact:
     VM_Flavor_array:  "{{ result.ansible_facts | json_query(query) | list }}"
@@ -36,7 +20,6 @@
   when: VM_Flavor_array.0 is defined
 
 - name: Output ID for selected flavor
-  debug: 
+  debug:
     msg: "{{ VM_Flavor_Name }} - vCPUs='{{ VM_Flavor_CPU }}', Mem='{{ VM_Flavor_Mem }}', ID='{{ VM_Flavor_ID }}'"
   when: VM_Flavor_array.0 is defined
-
