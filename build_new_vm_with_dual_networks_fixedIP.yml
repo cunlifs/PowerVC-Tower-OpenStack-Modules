@@ -31,7 +31,7 @@
 
   - name: Create network interfaces for VM
     import_role:
-      name: VM_network_create
+      name: VM_network_create_x2_fixedIP
 
   - name: Set VM images
     import_role:
