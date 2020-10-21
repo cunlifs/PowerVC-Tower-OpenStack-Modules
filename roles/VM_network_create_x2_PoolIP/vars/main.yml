@@ -1,0 +1,4 @@
+---
+# vars file for VM_network_pick
+
+VM_Net_Default: "VLAN_156"
