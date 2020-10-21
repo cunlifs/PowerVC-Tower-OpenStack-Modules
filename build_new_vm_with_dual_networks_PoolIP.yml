@@ -40,8 +40,8 @@
   - name: Show details before creating VM
     debug:
       msg: "Creating New VM: '{{ VM_Name }}'
-      Primary Network: '{{VM_Net_Name_1 }}' with IP '{{VM_Net_IP_1}}'
-      Secondary Network: '{{VM_Net_Name_2 }}' with IP '{{VM_Net_IP_2}}'
+      Primary Network: '{{VM_Net_Name_1 }}'
+      Secondary Network: '{{VM_Net_Name_2 }}' 
       Using Image: {{ VM_Image_Name }} '{{ VM_Image_ID }}'
       Using Compute Template : {{ VM_Flavor_Name }} - vCPUs:{{ VM_Flavor_CPU }} Mem:{{ VM_Flavor_Mem }}"
 
