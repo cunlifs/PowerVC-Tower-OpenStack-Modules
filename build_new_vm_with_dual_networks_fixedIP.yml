@@ -1,0 +1,60 @@
+---
+- name: Build a new VM via Tower and PowerVC/OpenStack with 2 network interfaces and fixed IPs
+# This playbook requires new VM name, image, flavor, network 1&2 and IP 1&2
+  hosts: localhost
+
+# If calling from Tower the following variables need to be entered
+  vars_prompt:
+    - name: "VM_Name"
+      prompt: "Enter name of new VM to create"
+      name: "VM_Net_Name_1"
+      prompt: "Enter name of primary network"
+      name: "VM_Net_Name_2"
+      prompt: "Enter name of secondary network"
+      name: "VM_Net_IP_1"
+      prompt: "Enter IP for primary interface"
+      name: "VM_Net_IP_2"
+      prompt: "Enter IP for secondary interface"
+      name: "VM_Image_Name"
+      prompt: "Enter name of image to use"
+      name: "VM_Flavor_Name"
+      prompt: "Enter name of compute template to use"
+
+  tasks:
+  - name: Display VM Name
+    debug:
+      msg: "Creating VM {{ VM_Name }}"
+
+  - name: List existing VMs
+    import_role:
+      name: VM_name_list
+
+  - name: Create network interfaces for VM
+    import_role:
+      name: VM_network_create
+
+  - name: Pick VM images
+    import_role:
+      name: VM_image_pick
+
+  - name: Pick VM flavors
+    import_role:
+      name: VM_flavor_pick
+
+  - name: List existing VMs
+    import_role:
+      name: VM_name_list
+
+  - name: Show details before creating VM
+    debug:
+      msg: "Creating New VM: '{{ VM_Name }}'
+      Primary Network: '{{VM_Net_Name_1 }}' with IP '{{VM_Net_IP_1}}'
+      Secondary Network: '{{VM_Net_Name_2 }}' with IP '{{VM_Net_IP_2}}'
+      Using Image: {{ VM_Image_Name }} '{{ VM_Image_ID }}'
+      Using Compute Template : {{ VM_Flavor_Name }} - vCPUs:{{ VM_Flavor_CPU }} Mem:{{ VM_Flavor_Mem }}"
+
+  - name: Create new VM
+    import_role:
+      name: VM_create_vm
+#    when:
+#      - VM_Flavor_ID is defined
