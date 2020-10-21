@@ -1,0 +1,7 @@
+---
+# vars file for VM_create
+
+#VM_Net_Name:  "VLAN 156"
+#VM_Name
+#VM_Image_ID
+#VM_Flavor_ID

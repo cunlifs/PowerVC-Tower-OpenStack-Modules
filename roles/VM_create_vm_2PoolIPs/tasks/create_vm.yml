@@ -1,0 +1,64 @@
+---
+- name: Create a PowerVC Virtual Machine
+  hosts: localhost
+  vars:
+    Play_Dir:     "~richj/playbooks"
+    VM_Net_Name:  "VLAN 156"
+    #VM_Name:      ""
+    VM_Image_ID:  ""
+    VM_Flavor_ID: ""
+
+  tasks:
+    - name: Create an SSH Key Pair
+      os_keypair:
+        state: present
+        name: ansible-ssh-key
+        public_key_file: "{{ ansible_env.HOME }}/.ssh/id_rsa.pub"
+
+    - name: Prompt for new VM Name
+      pause: 
+        prompt: "Enter Name for new VM "
+      register: VM_Name_Entry
+      when: VM_Name is undefined
+
+    - name: Set VM Variables
+      set_fact:
+        VM_Name: "{{ VM_Name_Entry.user_input }}"
+      when: VM_Name is undefined
+
+    - name: Get Details of Image for new VM
+      include: "{{ Play_Dir }}/list_images.yml"
+
+    - name: Get Details of flavour for new VM
+      include: "{{ Play_Dir }}/list_flavors.yml"
+
+    - name: Show details before creating VM
+      pause:
+        prompt: "\nCreate New VM  : '{{ VM_Name }}' \n       Network : '{{VM_Net_Name }}'\n       Image   : {{ VM_Image_Name }} '{{ VM_Image_ID }}'\n       Flavour : {{ VM_Flavor_Name }} - vCPUs:{{ VM_Flavor_CPU }} Mem:{{ VM_Flavor_Mem }} '{{ VM_Flavor_ID }}'\n\nPress Enter to create VM with above details"
+
+    - name: Create a new VM instance
+      os_server:
+        state:    present
+        name:     "{{ VM_Name }}"
+        image:    "{{ VM_Image_ID }}"
+        flavor:   "{{ VM_Flavor_ID }}"
+        key_name: ansible-ssh-key
+        nics:
+          - net-name: "{{ VM_Net_Name }}"
+        meta:
+          hostname: my-new-vm
+          group: ansible-vms
+      register: vm
+
+    - name: Print VM's public IP address
+      debug:
+        var: vm.openstack.public_v4
+
+    - name: Waits for SSH port 22 to open
+      wait_for:
+        host: "{{ vm.openstack.public_v4 }}"
+        port: 22
+
+    - name: Add VM host key to known hosts
+      shell: "ssh-keyscan -H {{ vm.openstack.public_v4 }} >> ~/.ssh/known_hosts"
+

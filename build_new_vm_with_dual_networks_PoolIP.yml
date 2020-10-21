@@ -31,7 +31,7 @@
 
   - name: Create network interfaces for VM
     import_role:
-      name: VM_network_create_x2_fixedIP
+      name: VM_network_create_x2_PoolIP
 
   - name: Set VM images
     import_role:
@@ -51,6 +51,6 @@
 
   - name: Create new VM
     import_role:
-      name: VM_create_vm_2FixedIPs
+      name: VM_create_vm
 #    when:
 #      - VM_Flavor_ID is defined
