@@ -51,6 +51,6 @@
 
   - name: Create new VM
     import_role:
-      name: VM_create_vm
+      name: VM_create_vm_2PoolIPs
 #    when:
 #      - VM_Flavor_ID is defined
