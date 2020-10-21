@@ -33,17 +33,13 @@
     import_role:
       name: VM_network_create
 
-  - name: Pick VM images
+  - name: Set VM images
     import_role:
-      name: VM_image_pick
+      name: VM_image_set
 
-  - name: Pick VM flavors
+  - name: Set VM flavors
     import_role:
-      name: VM_flavor_pick
-
-  - name: List existing VMs
-    import_role:
-      name: VM_name_list
+      name: VM_flavor_set
 
   - name: Show details before creating VM
     debug:

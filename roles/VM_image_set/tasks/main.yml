@@ -1,0 +1,27 @@
+---
+# tasks file for VM_image_set
+# Sets the image id based on variable passed
+- name: Retrieve list of all OS images
+  os_image_facts:
+  register: images
+
+- name: Get data for selected image
+  set_fact:
+    VM_Image_Array:  "{{ images.ansible_facts | json_query(query) }}"
+  vars:
+    query: "openstack_image[?name=='{{ VM_Image_Name }}' ]"
+
+- name: Debug - Output Image Array
+  debug:
+    var: VM_Image_Array.0
+    verbosity: 1
+
+- name: Get data for selected image
+  set_fact:
+    VM_Image_ID: "{{ VM_Image_Array.0['id'] }}"
+  when: VM_Image_Array.0 is defined
+
+- name: Output ID for selected image
+  debug:
+    msg: "{{ VM_Image_Name }} - id:'{{ VM_Image_ID }}'"
+  when: VM_Image_Array.0 is defined

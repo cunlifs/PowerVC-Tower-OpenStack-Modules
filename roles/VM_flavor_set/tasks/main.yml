@@ -1,0 +1,29 @@
+---
+# tasks file for VM_flavor_set
+# Sets the compute flavor passed via variable
+- name: Retrieve list of all public flavors
+  os_flavor_facts:
+  register: flavors
+
+- name: Get data for selected flavor
+  set_fact:
+    VM_Flavor_array:  "{{ flavors.ansible_facts | json_query(query) | list }}"
+  vars:
+    query: "openstack_flavors[?name=='{{ VM_Flavor_Name }}' ]"
+
+- name: Debug - Output Flavor Array
+  debug:
+    var: VM_Flavor_array.0
+    verbosity: 1
+
+- name: Set Values for selected flavor
+  set_fact:
+    VM_Flavor_ID:   "{{ VM_Flavor_array.0['id'] }}"
+    VM_Flavor_Mem:  "{{ VM_Flavor_array.0['ram'] }}"
+    VM_Flavor_CPU:  "{{ VM_Flavor_array.0['vcpus'] }}"
+  when: VM_Flavor_array.0 is defined
+
+- name: Output ID for selected flavor
+  debug:
+    msg: "{{ VM_Flavor_Name }} - vCPUs='{{ VM_Flavor_CPU }}', Mem='{{ VM_Flavor_Mem }}', ID='{{ VM_Flavor_ID }}'"
+  when: VM_Flavor_array.0 is defined
